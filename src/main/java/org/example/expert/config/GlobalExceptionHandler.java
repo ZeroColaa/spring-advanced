@@ -2,6 +2,7 @@ package org.example.expert.config;
 
 import org.example.expert.domain.auth.exception.AuthException;
 import org.example.expert.domain.common.exception.InvalidRequestException;
+import org.example.expert.domain.common.exception.InvalidTokenException;
 import org.example.expert.domain.common.exception.ServerException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,17 @@ public class GlobalExceptionHandler {
         errorResponse.put("message", message);
 
         return new ResponseEntity<>(errorResponse, status);
+    }
+
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<?> handleInvalidToken(InvalidTokenException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("status", "UNAUTHORIZED");
+        body.put("code", 401);
+        body.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 }
 

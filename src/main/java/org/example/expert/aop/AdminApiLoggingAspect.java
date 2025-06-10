@@ -1,4 +1,4 @@
-package org.example.expert.config.aop;
+package org.example.expert.aop;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,9 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.example.expert.security.userdetails.UserPrincipal;
 
 import java.time.Instant;
 
@@ -26,11 +29,15 @@ public class AdminApiLoggingAspect {
 
         long requestedTime = System.currentTimeMillis();
 
-        Object userId = request.getAttribute("userId");
+        // SecurityContext에서 인증된 사용자 정보 꺼내기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = null;
+        if (authentication != null && authentication.getPrincipal() instanceof UserPrincipal principal) {
+            userId = principal.getId();
+        }
         String url = request.getRequestURI();
         String method = request.getMethod();
         String requestBody = new ObjectMapper().writeValueAsString(joinPoint.getArgs());
-
 
         Object result = null;
 
