@@ -25,6 +25,7 @@ public class Comment extends Timestamped {
     @JoinColumn(name = "todo_id", nullable = false)
     private Todo todo;
 
+
     public Comment(String contents, User user, Todo todo) {
         this.contents = contents;
         this.user = user;
